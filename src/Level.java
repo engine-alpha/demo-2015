@@ -1,11 +1,12 @@
 import ea.Knoten;
 import ea.Kreis;
+import ea.Sound;
 import ea.Taste;
 import ea.Ticker;
 
 import java.awt.Color;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Level extends Knoten implements Ticker {
     public static final int WIDTH = 400;
@@ -20,6 +21,8 @@ public class Level extends Knoten implements Ticker {
     private final List<Dot> children;
     private final List<Kreis> buffer;
 
+    private final Sound shoot;
+
     public Level(final int initialCount, final int shots, final Main main) {
         this.main = main;
 
@@ -31,15 +34,15 @@ public class Level extends Knoten implements Ticker {
         this.anchor.zIndex(2);
         this.add(this.anchor);
 
-        this.children = new ArrayList<>();
+        this.children = new CopyOnWriteArrayList<>();
 
         for (int i = 0; i < initialCount; i++) {
-            Dot circle = new Dot(this.anchorX, this.anchorY, 360 * i / initialCount);
+            Dot circle = new Dot(this.anchorX, this.anchorY, 360 * i / initialCount, 10);
             this.children.add(circle);
             this.add(circle.getSymbol());
         }
 
-        this.buffer = new ArrayList<>();
+        this.buffer = new CopyOnWriteArrayList<>();
 
         for (int i = 0; i < shots; i++) {
             Kreis circle = new Kreis(this.anchorX - Dot.SIZE / 2, HEIGHT - 150 + i * 50, Dot.SIZE);
@@ -48,6 +51,8 @@ public class Level extends Knoten implements Ticker {
             this.buffer.add(circle);
             this.add(circle);
         }
+
+        this.shoot = new Sound("res/shoot.wav");
     }
 
     @Override
@@ -63,6 +68,8 @@ public class Level extends Knoten implements Ticker {
             return;
         }
 
+        this.shoot.play();
+
         final Kreis circle = this.buffer.remove(0);
 
         this.main.manager.anmelden(new Ticker() {
@@ -74,7 +81,7 @@ public class Level extends Knoten implements Ticker {
                 if (circle.getY() < anchorY + Dot.RADIUS + 30) {
                     for (Dot d : children) {
                         if (d.getSymbol().schneidet(circle)) {
-                            main.setState(new GameOverState(main));
+                            main.setState(GameOverState.class);
                         }
                     }
                 }
