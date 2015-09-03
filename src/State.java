@@ -10,4 +10,8 @@ public class State extends Knoten {
     public void onKey(int code) {
 
     }
+
+    public void unload() {
+
+    }
 }

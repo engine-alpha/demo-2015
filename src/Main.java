@@ -25,6 +25,10 @@ public class Main extends Game {
             throw new RuntimeException(e);
         }
 
+        if (this.state != null) {
+            this.state.unload();
+        }
+
         this.wurzel.leeren();
         this.wurzel.add(state);
         this.state = state;

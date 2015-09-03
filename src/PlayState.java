@@ -15,4 +15,8 @@ public class PlayState extends State {
     public void onKey(int key) {
         this.level.onKey(key);
     }
+
+    public void unload() {
+        this.main.tickerAbmelden(level);
+    }
 }
